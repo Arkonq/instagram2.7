@@ -1,0 +1,120 @@
+﻿@using InstagramLite.Infrastructure
+@model IEnumerable<InstagramLite.Models.Post>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>News feed</h1>
+
+<p>
+    <a asp-action="Create">New Post</a>
+</p>
+
+
+<div class="align-content-center">
+    @foreach (var post in Model)
+    {
+        <div class="card" style="width: 500px !important; margin: 0 auto;">
+            <h6 class="card-header">@post.User.Email.Substring(0, post.User.Email.IndexOf('@'))</h6>
+            <img class="card-img-top" src="@post.Photo" alt="Card image cap">
+            <div class="card-body">
+                <div style="margin-bottom: 5px;">
+                    <img class="likeBtn" style="cursor: pointer;" src="images/like.png" width="27" alt="Like" data-id="@post.Id"
+                         />
+                    <span class="likesCount">@post.Likes</span><span> likes</span>
+                </div>
+                <p class="card-text"><strong>@post.User.Email.Substring(0, post.User.Email.IndexOf('@')) </strong>@post.Description</p>
+                <p class="card-text"><small class="text-muted">@post.CreatedDate.ToString("MMMM dd")</small></p>
+            </div>
+        </div>
+        <br />
+    }
+</div>
+
+
+@section Scripts
+{
+    <script>
+        $(".likeBtn").on("click",
+            function(e) {
+                console.log($(this).attr("data-id"));
+
+                var currentElement = $(this);
+
+                var dataId = $(this).attr("data-id");
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Posts/Like",
+                    contentType: "application/x-www-form-urlencoded; charset=UTF-8",
+                    data: {postId: parseInt(dataId)},
+                    success: function(data) {
+                        //console.log(data.likes);
+                        //$(this).closest('span').text(data.likes);
+                        console.log();
+                        currentElement.next().html(data.likes);
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        
+                        console.log(jqXHR.responseText);
+                        console.log(textStatus);
+                        console.log(errorThrown);
+                    }
+                });
+            });
+    </script>
+}
+
+
+@*<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Photo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CreatedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UserId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Likes)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Photo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UserId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Likes)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>*@
